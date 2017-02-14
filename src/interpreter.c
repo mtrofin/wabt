@@ -26,7 +26,8 @@
 
 #define V(rtype, type1, type2, mem_size, code, NAME, text) [code] = text,
 static const char* s_interpreter_opcode_name[] = {
-    WABT_FOREACH_OPCODE(V)
+  WABT_FOREACH_OPCODE(V)
+  WABT_FOREACH_V8_ASM_OPCODE(V)
     [WABT_OPCODE_ALLOCA] = "alloca",
     [WABT_OPCODE_BR_UNLESS] = "br_unless",
     [WABT_OPCODE_CALL_HOST] = "call_host",

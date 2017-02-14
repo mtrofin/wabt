@@ -28,10 +28,13 @@
 
 #include "allocator.h"
 
-#define V(rtype, type1, type2, mem_size, code, NAME, text)                 \
+#define V(rtype, type1, type2, mem_size, code, NAME, text)   \
   [code] = {text, WABT_TYPE_##rtype, WABT_TYPE_##type1, WABT_TYPE_##type2, \
             mem_size},
-WabtOpcodeInfo g_wabt_opcode_info[] = {WABT_FOREACH_OPCODE(V)};
+WabtOpcodeInfo g_wabt_opcode_info[] = {
+  WABT_FOREACH_OPCODE(V)
+  WABT_FOREACH_V8_ASM_OPCODE(V)
+};
 #undef V
 
 const char* g_wabt_kind_name[] = {"func", "table", "memory", "global"};

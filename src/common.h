@@ -373,10 +373,45 @@ enum { WABT_USE_NATURAL_ALIGNMENT = 0xFFFFFFFF };
   V(F32, I32, ___, 0, 0xbe, F32_REINTERPRET_I32, "f32.reinterpret/i32") \
   V(F64, I64, ___, 0, 0xbf, F64_REINTERPRET_I64, "f64.reinterpret/i64")
 
+// V8 asm-wasm opcodes
+#define WABT_FOREACH_V8_ASM_OPCODE(V)                               \
+  V(F64, F64, ___, 0, 0xc0, ASM_F64Acos, "asm:acos")                    \
+  V(F64, F64, ___, 0, 0xc1, ASM_F64Asin, "asm:asin")                    \
+  V(F64, F64, ___, 0, 0xc2, ASM_F64Atan, "asm:atan")                    \
+  V(F64, F64, ___, 0, 0xc3, ASM_F64cos, "asm:cos")                      \
+  V(F64, F64, ___, 0, 0xc4, ASM_F64sin, "asm:sin")                      \
+  V(F64, F64, ___, 0, 0xc5, ASM_F64tan, "asm:tan")                      \
+  V(F64, F64, ___, 0, 0xc6, ASM_F64Exp, "asm:exp")                      \
+  V(F64, F64, ___, 0, 0xc7, ASM_F64Log, "asm:log")                      \
+  V(F64, F64, F64, 0, 0xc8, ASM_F64Atan2, "asm:atan2")                  \
+  V(F64, F64, F64, 0, 0xc9, ASM_F64APow, "asm:apow")                    \
+  V(F64, F64, F64, 0, 0xca, ASM_F64AMod, "asm:amod")                    \
+  V(I32, I32, I32, 0, 0xd0, ASM_I32AsmjsDivS, "asm:div_s")              \
+  V(I32, I32, I32, 0, 0xd1, ASM_I32AsmjsDivU, "asm:div_u")              \
+  V(I32, I32, I32, 0, 0xd2, ASM_I32AsmjsRemS, "asm:rem_s")              \
+  V(I32, I32, I32, 0, 0xd3, ASM_I32AsmjsRemU, "asm:rem_u")              \
+  V(I32, I32, ___, 1, 0xd4, ASM_I32AsmjsLoadMem8S, "asm:i32.load8_s")   \
+  V(I32, I32, ___, 1, 0xd5, ASM_I32AsmjsLoadMem8U, "asm:i32.load8_u")   \
+  V(I32, I32, ___, 2, 0xd6, ASM_I32AsmjsLoadMem16S, "asm:i32.load16_s") \
+  V(I32, I32, ___, 2, 0xd7, ASM_I32AsmjsLoadMem16U, "asm:i32.load16_u") \
+  V(I32, I32, ___, 4, 0xd8, ASM_I32AsmjsLoadMem, "asm:i32.load")        \
+  V(F32, I32, ___, 4, 0xd9, ASM_F32AsmjsLoadMem, "asm:f.load")          \
+  V(F64, I32, ___, 8, 0xda, ASM_F64AsmjsLoadMem, "asm:d.load")          \
+  V(I32, I32, I32, 1, 0xdb, ASM_I32AsmjsStoreMem8, "asm:store8")        \
+  V(I32, I32, I32, 2, 0xdc, ASM_I32AsmjsStoreMem16, "asm:store16")      \
+  V(I32, I32, I32, 4, 0xdd, ASM_I32AsmjsStoreMem, "asm:storei")         \
+  V(F32, I32, F32, 4, 0xde, ASM_F32AsmjsStoreMem, "asm:storef")         \
+  V(F64, F32, ___, 8, 0xdf, ASM_F64AsmjsStoreMem, "asm:stored")         \
+  V(I32, F32, ___, 0, 0xe0, ASM_I32AsmjsSConvertF32, "asm:convertf_s")  \
+  V(I32, F32, ___, 0, 0xe1, ASM_I32AsmjsUConvertF32, "asm:convertf_u")  \
+  V(I32, F64, ___, 0, 0xe2, ASM_I32AsmjsSConvertF64, "asm:convertd_s")  \
+  V(I32, F64, ___, 0, 0xe3, ASM_I32AsmjsUConvertF64, "asm:convertd_u")
+
 typedef enum WabtOpcode {
 #define V(rtype, type1, type2, mem_size, code, NAME, text) \
   WABT_OPCODE_##NAME = code,
   WABT_FOREACH_OPCODE(V)
+  WABT_FOREACH_V8_ASM_OPCODE(V)
 #undef V
   WABT_NUM_OPCODES
 } WabtOpcode;
@@ -436,6 +471,11 @@ void wabt_default_binary_error_callback(uint32_t offset,
                                         void* user_data);
 
 void wabt_init_stdio();
+
+WabtBool IsStore(WabtOpcode opcode);
+WabtBool IsLoad(WabtOpcode opcode);
+WabtBool IsUnaryExpr(WabtOpcode opcode);
+WabtBool IsBinaryExpr(WabtOpcode opcode);
 
 /* opcode info */
 extern WabtOpcodeInfo g_wabt_opcode_info[];
